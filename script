@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghalia's Birthday Surprise</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* Dark entry screen */
+        .entry-screen {
+            background: #000;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .entry-title {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+
+        .name-input {
+            padding: 15px 25px;
+            font-size: 1.5rem;
+            border: 2px solid #333;
+            background: #111;
+            color: #fff;
+            border-radius: 10px;
+            text-align: center;
+            width: 80%;
+            max-width: 400px;
+            margin-bottom: 1rem;
+        }
+
+        .error-msg {
+            color: #ff4444;
+            font-size: 1.2rem;
+            animation: shake 0.5s ease-in-out;
+            display: none;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Countdown screen */
+        .countdown-screen {
+            background: linear-gradient(45deg, #1a0033, #33001a);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .countdown-number {
+            font-size: 20rem;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 50px #ff6b9d;
+            margin-bottom: 2rem;
+            transition: all 0.5s ease;
+        }
+
+        .countdown-number.slow {
+            font-size: 30rem;
+            text-shadow: 0 0 100px #ff1493, 0 0 150px #ff69b4;
+        }
+
+        /* Celebration screen */
+        .celebration-screen {
+            display: none;
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .cake {
+            font-size: 15rem;
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            z-index: 10;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-20px); }
+            60% { transform: translateX(-50%) translateY(-10px); }
+        }
+
+        .happy-bday {
+            font-size: 4rem;
+            color: #ff69b4;
+            text-align: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-shadow: 0 0 30px #ff1493;
+            animation: glow 2s ease-in-out infinite alternate;
+            z-index: 10;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px #ff1493, 0 0 30px #ff69b4, 0 0 40px #ff1493; }
+            to { text-shadow: 0 0 30px #ff1493, 0 0 40px #ff69b4, 0 0 50px #ff1493; }
+        }
+
+        .gift-btn {
+            position: absolute;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(45deg, #ff6b9d, #c44569);
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255,107,157,0.5);
+            animation: shakeGift 1s infinite;
+            z-index: 20;
+        }
+
+        @keyframes shakeGift {
+            0%, 100% { transform: translateX(-50%) rotate(0deg); }
+            25% { transform: translateX(-50%) rotate(-5deg); }
+            75% { transform: translateX(-50%) rotate(5deg); }
+        }
+
+        /* Message screen */
+        .message-screen {
+            display: none;
+            background: linear-gradient(135deg, #1a0033, #33001a);
+            color: #fff;
+            padding: 20px;
+            height: 100vh;
+            overflow-y: auto;
+            text-align: center;
+            position: relative;
+        }
+
+        .message-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            max-width: 90%;
+            margin: 0 auto;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Fireworks and particles */
+        .firework {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ff69b4;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 2rem;
+            color: #ff69b4;
+            pointer-events: none;
+            animation: floatHeart 3s ease-out forwards;
+        }
+
+        @keyframes floatHeart {
+            0% { transform: translateY(100vh) scale(0); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1); opacity: 0; }
+        }
+
+        /* Terminal screen */
+        .terminal-screen {
+            background: #000;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            display: none;
+            padding: 20px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .terminal-header {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #ff4444;
+        }
+
+        .terminal-info {
+            font-size: 1.1rem;
+            line-height: 2;
+            white-space: pre-wrap;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .entry-title { font-size: 1.8rem; }
+            .name-input { font-size: 1.2rem; padding: 12px 20px; }
+            .countdown-number { font-size: 15rem; }
+            .countdown-number.slow { font-size: 25rem; }
+            .cake { font-size: 10rem; }
+            .happy-bday { font-size: 2.5rem; }
+            .message-text { font-size: 1rem; }
+        }
+
+        /* Emojis background */
+        .emoji-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .emoji {
+            position: absolute;
+            font-size: 2rem;
+            animation: float 6s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Entry Screen -->
+    <div class="entry-screen" id="entryScreen">
+        <div class="entry-title">✨ Enter your name to begin ✨</div>
+        <input type="text" class="name-input" id="nameInput" placeholder="Your name..." maxlength="20">
+        <div class="error-msg" id="errorMsg">❌ Not the correct name! Try again</div>
+    </div>
+
+    <!-- Countdown Screen -->
+    <div class="countdown-screen" id="countdownScreen">
+        <div class="countdown-number" id="countdownNumber">10</div>
+    </div>
+
+    <!-- Celebration Screen -->
+    <div class="celebration-screen" id="celebrationScreen">
+        <div class="emoji-bg" id="emojiBg"></div>
+        <div class="cake">🎂</div>
+        <div class="happy-bday">HAPPY BIRTHDAYYYY!! 🎉✨💖</div>
+        <button class="gift-btn" id="giftBtn">🎁 Open Gift 🎁</button>
+    </div>
+
+    <!-- Message Screen -->
+    <div class="message-screen" id="messageScreen">
+        <div class="message-text">
+            Happy birthday, my love 💕<br><br>
+            Today is so special because it's the day you were born, and honestly, I'm so grateful for that. 
+            You came into my life and made everything feel different in the best way possible. 
+            Your smile, your voice, and even the little things you do mean so much to me. 
+            Being with you makes me happy in a way I can't even explain.<br><br>
+            
+            I feel so lucky to call you mine. You're not just my girlfriend, you're my comfort, 
+            my happiness, and the person I always want to talk to. Every moment with you is 
+            something I truly cherish, and I can't wait to make even more memories together.<br><br>
+            
+            I hope this year brings you all the happiness, love, and success you deserve. 
+            I'll always be here for you, no matter what, loving you and supporting you every step of the way.<br><br>
+            
+            I love you so much 💕 Happy birthday, my princess 🎂✨
+        </div>
+    </div>
+
+    <!-- Terminal Screen -->
+    <div class="terminal-screen" id="terminalScreen">
+        <div class="terminal-header">🔥 ACCESS GRANTED - ADMIN TERMINAL 🔥</div>
+        <div class="terminal-info" id="terminalInfo">
+            Loading system information...
+        </div>
+    </div>
+
+    <!-- Audio Context -->
+    <script>
+        // Audio Context for sounds
+        let audioContext;
+        let romanticMusic;
+        let beepSound;
+        let cheerSound;
+
+        function initAudio() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Romantic background music oscillator
+            romanticMusic = audioContext.createOscillator();
+            romanticMusic.type = 'sine';
+            romanticMusic.frequency.setValueAtTime(220, audioContext.currentTime);
+            
+            const musicGain = audioContext.createGain();
+            musicGain.gain.setValueAtTime(0.1, audioContext.currentTime);
+            
+            romanticMusic.connect(musicGain);
+            musicGain.connect(audioContext.destination);
+            romanticMusic.start();
+        }
+
+        function playBeep(frequency = 800, duration = 0.2) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'square';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        function playCheer() {
+            // Multiple frequencies for cheer effect
+            [523, 659, 784].forEach((freq, i) => {
+                setTimeout(() => playBeep(freq, 0.3), i * 100);
+            });
+        }
+
+        // Valid names
+        const validNames = ['Ghalia', 'ghalia', '8alya', 'ghalya'];
+        const adminCode = 'shadyhatesgore';
+
+        // Get device info
+        function getDeviceInfo() {
+            const userAgent = navigator.userAgent;
+            let deviceBrand = 'Unknown';
+            
+            if (/iPhone|iPad|iPod/.test(userAgent)) deviceBrand = 'Apple iOS';
+            else if (/Android/.test(userAgent)) deviceBrand = 'Android';
+            else if (/Windows/.test(userAgent)) deviceBrand = 'Windows';
+            else if (/Mac/.test(userAgent)) deviceBrand = 'Mac';
+            
+            return {
+                ip: 'Loading... (Client-side limitation)',
+                device: deviceBrand,
+                timestamp: new Date().toLocaleString()
+            };
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            initAudio();
+            
+            const nameInput = document.getElementById('nameInput');
+            const errorMsg = document.getElementById('errorMsg');
+            const entryScreen = document.getElementById('entryScreen');
+            
+            nameInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const input = nameInput.value.trim();
+                    
+                    if (input === adminCode) {
+                        // Admin terminal
+                        showTerminal();
+                    } else if (validNames.includes(input)) {
+                        // Valid name - start countdown
+                        entryScreen.style.display = 'none';
+                        document.getElementById('countdownScreen').style.display = 'flex';
+                        startCountdown();
+                    } else {
+                        // Invalid name
+                        errorMsg.style.display = 'block';
+                        playBeep(400, 0.3);
+                        nameInput.style.borderColor = '#ff4444';
+                        setTimeout(() => {
+                            errorMsg.style.display = 'none';
+                            nameInput.style.borderColor = '#333';
+                        }, 2000);
+                    }
+                }
+            });
+        });
+
+        function startCountdown() {
+            let count = 10;
+            const countdownNum = document.getElementById('countdownNumber');
+            
+            const countdownInterval = setInterval(() => {
+                countdownNum.textContent = count;
+                countdownNum.classList.remove('slow');
+                
+                if (count <= 5) {
+                    countdownNum.classList.add('slow');
+                    playBeep(300 + (count * 50), 0.4);
+                } else {
+                    playBeep(600, 0.1);
+                }
+                
+                count--;
+                
+                if (count < 0) {
+                    clearInterval(countdownInterval);
+                    setTimeout(() => {
+                        document.getElementById('countdownScreen').style.display = 'none';
+                        document.getElementById('celebrationScreen').style.display = 'block';
+                        startCelebration();
+                    }, 1000);
+                }
+            }, count > 5 ? 800 : 1200);
+        }
+
+        function startCelebration() {
+            playCheer();
+            createFireworks();
+            createEmojiRain();
+            createHeartRain();
+        }
+
+        function createFireworks() {
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.className = 'firework';
+                    firework.style.left = Math.random() * 100 + '%';
+                    firework.style.background = `hsl(${Math.random() * 60 + 300}, 100%, 60%)`;
+                    firework.style.animation = `float 2s ease-out forwards`;
+                    document.getElementById('celebrationScreen').appendChild(firework);
+                    
+                    setTimeout(() => firework.remove(), 2000);
+                }, i * 100);
+            }
+        }
+
+        function createEmojiRain() {
+            const emojis = ['🎉', '✨', '🎈', '🎊', '💖', '🌟'];
+            const emojiBg = document.getElementById('emojiBg');
+            
+            setInterval(() => {
+                const emoji = document.createElement('div');
+                emoji.className = 'emoji';
+                emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                emoji.style.left = Math.random() * 100 + '%';
+                emoji.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                emojiBg.appendChild(emoji);
+                
+                setTimeout(() => emoji.remove(), 6000);
+            }, 300);
+        }
+
+        function createHeartRain() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '💕';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.getElementById('celebrationScreen').appendChild(heart);
+                
+                setTimeout(() => heart.remove(), 4000);
+            }, 200);
+        }
+
+        document.getElementById('giftBtn').addEventListener('click', () => {
+            playCheer();
+            document.getElementById('celebrationScreen').style.display = 'none';
+            document.getElementById('messageScreen').style.display = 'block';
+        });
+
+        function showTerminal() {
+            const info = getDeviceInfo();
+            const terminalInfo = document.getElementById('terminalInfo');
+            terminalInfo.textContent = `
+INITIALIZING SECURITY TERMINAL...
+=====================================
+LAST USER DETECTED:
+IP Address: ${info.ip}
+Device Brand: ${info.device}
+Last Access: ${info.timestamp}
+User Agent: ${navigator.userAgent.substring(0, 100)}...
+=====================================
+ACCESS LEVEL: ROOT
+WARNING: This is a private debugging terminal
+=====================================`;
+            
+            document.getElementById('entryScreen').style.display = 'none';
+            document.getElementById('terminalScreen').style.display = 'block';
+            playBeep(100, 0.5);
+        }
+    </script>
+</body>
+</html>
